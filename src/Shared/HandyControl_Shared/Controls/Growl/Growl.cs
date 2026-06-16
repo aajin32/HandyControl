@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using HandyControl.Data;
 using HandyControl.Interactivity;
@@ -26,6 +26,7 @@ public class Growl : Control
     private const string ElementGridMain = "PART_GridMain";
     private const string ElementButtonClose = "PART_ButtonClose";
     private const int MinWaitTime = 2;
+    private const int TranslateTransformIndex = 3;
 
     private static GrowlWindow GrowlWindow;
 
@@ -44,6 +45,14 @@ public class Growl : Control
     public static readonly DependencyProperty ShowModeProperty = DependencyProperty.RegisterAttached(
         "ShowMode", typeof(GrowlShowMode), typeof(Growl),
         new FrameworkPropertyMetadata(default(GrowlShowMode), FrameworkPropertyMetadataOptions.Inherits));
+
+    public static readonly DependencyProperty TransitionModeProperty = DependencyProperty.RegisterAttached(
+        "TransitionMode", typeof(TransitionMode), typeof(Growl),
+        new FrameworkPropertyMetadata(default(TransitionMode), FrameworkPropertyMetadataOptions.Inherits));
+
+    public static readonly DependencyProperty TransitionStoryboardProperty = DependencyProperty.RegisterAttached(
+        "TransitionStoryboard", typeof(Storyboard), typeof(Growl),
+        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
 
     public static readonly DependencyProperty ShowDateTimeProperty = DependencyProperty.Register(
         nameof(ShowDateTime), typeof(bool), typeof(Growl), new PropertyMetadata(ValueBoxes.TrueBox));
@@ -188,7 +197,12 @@ public class Growl : Control
         _buttonClose = GetTemplateChild(ElementButtonClose) as Button;
 
         CheckNull();
-        Update();
+        this.Hide();
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+        {
+            Update();
+            this.Show();
+        });
     }
 
     private void CheckNull()
@@ -205,6 +219,18 @@ public class Growl : Control
 
     public static GrowlShowMode GetShowMode(DependencyObject element) =>
         (GrowlShowMode) element.GetValue(ShowModeProperty);
+
+    public static void SetTransitionMode(DependencyObject element, TransitionMode value)
+        => element.SetValue(TransitionModeProperty, value);
+
+    public static TransitionMode GetTransitionMode(DependencyObject element)
+        => (TransitionMode) element.GetValue(TransitionModeProperty);
+
+    public static void SetTransitionStoryboard(DependencyObject element, Storyboard value)
+        => element.SetValue(TransitionStoryboardProperty, value);
+
+    public static Storyboard GetTransitionStoryboard(DependencyObject element)
+        => (Storyboard) element.GetValue(TransitionStoryboardProperty);
 
     public static void SetGrowlParent(DependencyObject element, bool value) =>
         element.SetValue(GrowlParentProperty, ValueBoxes.BooleanBox(value));
@@ -260,13 +286,7 @@ public class Growl : Control
         var menuItem = new MenuItem();
         LangProvider.SetLang(menuItem, HeaderedItemsControl.HeaderProperty, LangKeys.Clear);
 
-        menuItem.Click += (s, e) =>
-        {
-            foreach (var item in panel.Children.OfType<Growl>())
-            {
-                item.Close(false);
-            }
-        };
+        menuItem.Click += (s, e) => Clear(panel);
         panel.ContextMenu = new ContextMenu
         {
             Items =
@@ -289,16 +309,15 @@ public class Growl : Control
             _panelMore.Show();
         }
 
-        var transform = new TranslateTransform
+        StartTransition(false);
+
+        if (!_staysOpen)
         {
-            X = FlowDirection == FlowDirection.LeftToRight ? MaxWidth : -MaxWidth
-        };
-        _gridMain.RenderTransform = transform;
-        transform.BeginAnimation(TranslateTransform.XProperty, AnimationHelper.CreateAnimation(0));
-        if (!_staysOpen) StartTimer();
+            StartTimer();
+        }
     }
 
-    private static void ShowInternal(Panel panel, UIElement growl)
+    private static void ShowInternal(Panel panel, Growl growl)
     {
         if (panel is null)
         {
@@ -321,37 +340,36 @@ public class Growl : Control
 #if NET40
             new Action(
 #endif
-            () =>
-            {
-                if (GrowlWindow == null)
+                () =>
                 {
-                    GrowlWindow = new GrowlWindow();
-                    GrowlWindow.Show();
-                    InitGrowlPanel(GrowlWindow.GrowlPanel);
-                    GrowlWindow.Init();
+                    if (GrowlWindow == null)
+                    {
+                        GrowlWindow = new GrowlWindow();
+                        GrowlWindow.Show();
+                        InitGrowlPanel(GrowlWindow.GrowlPanel);
+                    }
+
+                    GrowlWindow.UpdatePosition(Growl.GetTransitionMode(Application.Current.MainWindow));
+                    GrowlWindow.Show(true);
+
+                    var ctl = new Growl
+                    {
+                        Message = growlInfo.Message,
+                        Time = DateTime.Now,
+                        Icon = ResourceHelper.GetResource<Geometry>(growlInfo.IconKey) ?? growlInfo.Icon,
+                        IconBrush = ResourceHelper.GetResource<Brush>(growlInfo.IconBrushKey) ?? growlInfo.IconBrush,
+                        _showCloseButton = growlInfo.ShowCloseButton,
+                        ActionBeforeClose = growlInfo.ActionBeforeClose,
+                        _staysOpen = growlInfo.StaysOpen,
+                        ShowDateTime = growlInfo.ShowDateTime,
+                        ConfirmStr = growlInfo.ConfirmStr,
+                        CancelStr = growlInfo.CancelStr,
+                        Type = growlInfo.Type,
+                        _waitTime = Math.Max(growlInfo.WaitTime, MinWaitTime),
+                    };
+
+                    ShowInternal(GrowlWindow.GrowlPanel, ctl);
                 }
-
-                GrowlWindow.Show(true);
-
-                var ctl = new Growl
-                {
-                    Message = growlInfo.Message,
-                    Time = DateTime.Now,
-                    Icon = ResourceHelper.GetResource<Geometry>(growlInfo.IconKey) ?? growlInfo.Icon,
-                    IconBrush = ResourceHelper.GetResource<Brush>(growlInfo.IconBrushKey) ?? growlInfo.IconBrush,
-                    _showCloseButton = growlInfo.ShowCloseButton,
-                    ActionBeforeClose = growlInfo.ActionBeforeClose,
-                    _staysOpen = growlInfo.StaysOpen,
-                    ShowDateTime = growlInfo.ShowDateTime,
-                    ConfirmStr = growlInfo.ConfirmStr,
-                    CancelStr = growlInfo.CancelStr,
-                    Type = growlInfo.Type,
-                    _waitTime = Math.Max(growlInfo.WaitTime, MinWaitTime),
-                    FlowDirection = growlInfo.FlowDirection
-                };
-
-                ShowInternal(GrowlWindow.GrowlPanel, ctl);
-            }
 #if NET40
             )
 #endif
@@ -368,38 +386,44 @@ public class Growl : Control
 #if NET40
             new Action(
 #endif
-            () =>
-            {
-                var ctl = new Growl
+                () =>
                 {
-                    Message = growlInfo.Message,
-                    Time = DateTime.Now,
-                    Icon = ResourceHelper.GetResource<Geometry>(growlInfo.IconKey) ?? growlInfo.Icon,
-                    IconBrush = ResourceHelper.GetResource<Brush>(growlInfo.IconBrushKey) ?? growlInfo.IconBrush,
-                    _showCloseButton = growlInfo.ShowCloseButton,
-                    ActionBeforeClose = growlInfo.ActionBeforeClose,
-                    _staysOpen = growlInfo.StaysOpen,
-                    ShowDateTime = growlInfo.ShowDateTime,
-                    ConfirmStr = growlInfo.ConfirmStr,
-                    CancelStr = growlInfo.CancelStr,
-                    Type = growlInfo.Type,
-                    _waitTime = Math.Max(growlInfo.WaitTime, MinWaitTime)
-                };
-
-                if (!string.IsNullOrEmpty(growlInfo.Token))
-                {
-                    if (TokenManager.TryGetControl(growlInfo.Token, out var panel))
+                    var ctl = new Growl
                     {
-                        ShowInternal(panel, ctl);
+                        Message = growlInfo.Message,
+                        Time = DateTime.Now,
+                        Icon = ResourceHelper.GetResource<Geometry>(growlInfo.IconKey) ?? growlInfo.Icon,
+                        IconBrush = ResourceHelper.GetResource<Brush>(growlInfo.IconBrushKey) ?? growlInfo.IconBrush,
+                        _showCloseButton = growlInfo.ShowCloseButton,
+                        ActionBeforeClose = growlInfo.ActionBeforeClose,
+                        _staysOpen = growlInfo.StaysOpen,
+                        ShowDateTime = growlInfo.ShowDateTime,
+                        ConfirmStr = growlInfo.ConfirmStr,
+                        CancelStr = growlInfo.CancelStr,
+                        Type = growlInfo.Type,
+                        _waitTime = Math.Max(growlInfo.WaitTime, MinWaitTime),
+                    };
+
+                    if (!string.IsNullOrEmpty(growlInfo.Token))
+                    {
+                        if (TokenManager.TryGetControl(growlInfo.Token, out var panel))
+                        {
+                            ShowInternal(panel, ctl);
+                        }
+                    }
+                    else
+                    {
+                        // GrowlPanel is null, we create it automatically
+                        GrowlPanel ??= CreateDefaultPanel();
+                        ShowInternal(GrowlPanel, ctl);
+
+                        var transitionMode = GetTransitionMode(GrowlPanel);
+                        GrowlPanel.VerticalAlignment = GetPanelVerticalAlignment(transitionMode);
+                        GrowlPanel.HorizontalAlignment = GetPanelHorizontalAlignment(transitionMode);
+                        GrowlPanel.SetValue(ReversibleStackPanel.ReverseOrderProperty,
+                            transitionMode is TransitionMode.Bottom2Top or TransitionMode.Bottom2TopWithFade);
                     }
                 }
-                else
-                {
-                    // GrowlPanel is null, we create it automatically
-                    GrowlPanel ??= CreateDefaultPanel();
-                    ShowInternal(GrowlPanel, ctl);
-                }
-            }
 #if NET40
             )
 #endif
@@ -408,43 +432,37 @@ public class Growl : Control
 
     private static Panel CreateDefaultPanel()
     {
-        FrameworkElement element = WindowHelper.GetActiveWindow();
-        var decorator = VisualHelper.GetChild<AdornerDecorator>(element);
+        var window = WindowHelper.GetActiveWindow();
+        window.Closed += (s, e) => Clear(GrowlPanel);
+        var decorator = VisualHelper.GetChild<AdornerDecorator>(window);
+        var layer = decorator?.AdornerLayer;
 
-        if (decorator != null)
+        if (layer == null)
         {
-            var layer = decorator.AdornerLayer;
-            if (layer != null)
-            {
-                var panel = new StackPanel
-                {
-                    VerticalAlignment = VerticalAlignment.Top
-                };
-
-                InitGrowlPanel(panel);
-                SetIsCreatedAutomatically(panel, true);
-
-                var scrollViewer = new ScrollViewer
-                {
-                    HorizontalAlignment = HorizontalAlignment.Right,
-                    VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
-                    IsInertiaEnabled = true,
-                    IsPenetrating = true,
-                    Content = panel
-                };
-
-                var container = new AdornerContainer(layer)
-                {
-                    Child = scrollViewer
-                };
-
-                layer.Add(container);
-
-                return panel;
-            }
+            return null;
         }
 
-        return null;
+        var panel = new ReversibleStackPanel();
+
+        InitGrowlPanel(panel);
+        SetIsCreatedAutomatically(panel, true);
+
+        var scrollViewer = new ScrollViewer
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
+            IsInertiaEnabled = true,
+            IsPenetrating = true,
+            Content = panel
+        };
+
+        var container = new AdornerContainer(layer)
+        {
+            Child = scrollViewer
+        };
+
+        layer.Add(container);
+
+        return panel;
     }
 
     private static void RemoveDefaultPanel(Panel panel)
@@ -808,44 +826,49 @@ public class Growl : Control
     /// <summary>
     ///     关闭
     /// </summary>
-    private void Close(bool invokeParam)
+    private void Close(bool invokeParam, bool isClear = false)
     {
-        if (ActionBeforeClose?.Invoke(invokeParam) == false)
+        if (!isClear && ActionBeforeClose?.Invoke(invokeParam) == false)
         {
             return;
         }
 
         _timerClose?.Stop();
-        var transform = new TranslateTransform();
-        _gridMain.RenderTransform = transform;
-        var animation =
-            AnimationHelper.CreateAnimation(FlowDirection == FlowDirection.LeftToRight ? ActualWidth : -ActualWidth);
-        animation.Completed += (s, e) =>
-        {
-            if (Parent is Panel panel)
-            {
-                panel.Children.Remove(this);
+        Panel.SetZIndex(this, int.MinValue);
+        StartTransition(true, OnStoryboardCompleted);
+        return;
 
-                if (GrowlWindow != null)
-                {
-                    if (GrowlWindow.GrowlPanel is { Children.Count: 0 })
-                    {
-                        GrowlWindow.Close();
-                        GrowlWindow = null;
-                    }
-                }
-                else
-                {
-                    if (GrowlPanel is { Children.Count: 0 } && GetIsCreatedAutomatically(GrowlPanel))
-                    {
-                        // If the count of children is zero, we need to remove the panel, provided that the panel was created automatically
-                        RemoveDefaultPanel(GrowlPanel);
-                        GrowlPanel = null;
-                    }
-                }
+        void OnStoryboardCompleted()
+        {
+            if (Parent is not Panel panel)
+            {
+                return;
             }
-        };
-        transform.BeginAnimation(TranslateTransform.XProperty, animation);
+
+            panel.Children.Remove(this);
+
+            if (GrowlWindow != null)
+            {
+                if (GrowlWindow.GrowlPanel is not { Children.Count: 0 })
+                {
+                    return;
+                }
+
+                GrowlWindow.Close();
+                GrowlWindow = null;
+            }
+            else
+            {
+                if (GrowlPanel is not { Children.Count: 0 } || !GetIsCreatedAutomatically(GrowlPanel))
+                {
+                    return;
+                }
+
+                // If the count of children is zero, we need to remove the panel, provided that the panel was created automatically
+                RemoveDefaultPanel(GrowlPanel);
+                GrowlPanel = null;
+            }
+        }
     }
 
     /// <summary>
@@ -887,4 +910,182 @@ public class Growl : Control
     private void ButtonCancel_OnClick(object sender, RoutedEventArgs e) => Close(false);
 
     private void ButtonOk_OnClick(object sender, RoutedEventArgs e) => Close(true);
+
+    private void StartTransition(bool isClose, Action completed = null)
+    {
+        var actualStoryboard = GetTransitionStoryboard(this) ?? CreateStoryboard(isClose, GetTransitionMode(this));
+        if (actualStoryboard is null)
+        {
+            return;
+        }
+
+        if (completed is not null)
+        {
+            actualStoryboard.Completed -= OnStoryboardCompleted;
+            actualStoryboard.Completed += OnStoryboardCompleted;
+        }
+
+        actualStoryboard.Begin();
+        return;
+
+        void OnStoryboardCompleted(object s, EventArgs e)
+        {
+            completed?.Invoke();
+            actualStoryboard.Completed -= OnStoryboardCompleted;
+        }
+    }
+
+    private Storyboard CreateStoryboard(bool isClose, TransitionMode transitionMode)
+    {
+        var transformLength = GetTransformLength(isClose, transitionMode);
+        var transformAnimation = CreateTransformAnimation(isClose, transitionMode, transformLength);
+        var storyboard = new Storyboard
+        {
+            Duration = transformAnimation.Duration
+        };
+
+        if (transitionMode is not TransitionMode.Fade)
+        {
+            _gridMain.RenderTransform = CreateRenderTransform(isClose, transitionMode, transformLength);
+            Storyboard.SetTarget(transformAnimation, _gridMain);
+            storyboard.Children.Add(transformAnimation);
+        }
+
+        if (CreateFadeAnimation(isClose, transitionMode) is not { } fadeAnimation)
+        {
+            return storyboard;
+        }
+
+        Storyboard.SetTarget(fadeAnimation, _gridMain);
+        storyboard.Children.Add(fadeAnimation);
+
+        return storyboard;
+    }
+
+    private double GetTransformLength(bool isClose, TransitionMode transitionMode)
+    {
+        var length = transitionMode switch
+        {
+            TransitionMode.Right2Left or TransitionMode.Right2LeftWithFade => ActualWidth,
+            TransitionMode.Left2Right or TransitionMode.Left2RightWithFade => -ActualWidth,
+            TransitionMode.Bottom2Top or TransitionMode.Bottom2TopWithFade => ActualHeight,
+            TransitionMode.Top2Bottom or TransitionMode.Top2BottomWithFade => -ActualHeight,
+            _ => ActualWidth
+        };
+
+
+        return isClose ? -length : length;
+    }
+
+    private static TransformGroup CreateOriginalTransform()
+    {
+        return new TransformGroup
+        {
+            Children =
+            {
+                new ScaleTransform(),
+                new SkewTransform(),
+                new RotateTransform(),
+                new TranslateTransform(),
+            }
+        };
+    }
+
+    private static Transform CreateRenderTransform(bool isClose, TransitionMode transitionMode, double transformLength)
+    {
+        var transformGroup = CreateOriginalTransform();
+        if (isClose)
+        {
+            return transformGroup;
+        }
+
+        switch (GetOrientation(transitionMode))
+        {
+            case Orientation.Horizontal:
+                ((TranslateTransform) transformGroup.Children[TranslateTransformIndex]).X = transformLength;
+                break;
+            case Orientation.Vertical:
+                ((TranslateTransform) transformGroup.Children[TranslateTransformIndex]).Y = transformLength;
+                break;
+            default:
+                ((TranslateTransform) transformGroup.Children[TranslateTransformIndex]).X = transformLength;
+                break;
+        }
+
+        return transformGroup;
+    }
+
+    private static DoubleAnimation CreateTransformAnimation(bool isClose, TransitionMode transitionMode,
+        double transformLength)
+    {
+        var animation = AnimationHelper.CreateAnimation(isClose ? -transformLength : 0);
+
+        switch (GetOrientation(transitionMode))
+        {
+            case Orientation.Horizontal:
+                Storyboard.SetTargetProperty(animation,
+                    new PropertyPath(
+                        $"(UIElement.RenderTransform).(TransformGroup.Children)[{TranslateTransformIndex}].(TranslateTransform.X)"));
+                break;
+            case Orientation.Vertical:
+                Storyboard.SetTargetProperty(animation,
+                    new PropertyPath(
+                        $"(UIElement.RenderTransform).(TransformGroup.Children)[{TranslateTransformIndex}].(TranslateTransform.Y)"));
+                break;
+            default:
+                Storyboard.SetTargetProperty(animation,
+                    new PropertyPath(
+                        $"(UIElement.RenderTransform).(TransformGroup.Children)[{TranslateTransformIndex}].(TranslateTransform.X)"));
+                break;
+        }
+
+        return animation;
+    }
+
+    private static DoubleAnimation CreateFadeAnimation(bool isClose, TransitionMode transitionMode)
+    {
+        if (transitionMode is TransitionMode.Right2Left or
+            TransitionMode.Left2Right or
+            TransitionMode.Bottom2Top or
+            TransitionMode.Top2Bottom or
+            TransitionMode.Custom)
+        {
+            return null;
+        }
+
+        var animation = AnimationHelper.CreateAnimation(isClose ? 0 : 1);
+        animation.From = isClose ? 1 : 0;
+        Storyboard.SetTargetProperty(animation, new PropertyPath("(UIElement.Opacity)"));
+
+        return animation;
+    }
+
+    private static Orientation? GetOrientation(TransitionMode transitionMode)
+    {
+        return transitionMode switch
+        {
+            TransitionMode.Right2Left or TransitionMode.Right2LeftWithFade or TransitionMode.Left2Right
+                or TransitionMode.Left2RightWithFade => Orientation.Horizontal,
+            TransitionMode.Bottom2Top or TransitionMode.Bottom2TopWithFade or TransitionMode.Top2Bottom
+                or TransitionMode.Top2BottomWithFade => Orientation.Vertical,
+            _ => Orientation.Horizontal
+        };
+    }
+
+    internal static VerticalAlignment GetPanelVerticalAlignment(TransitionMode transitionMode)
+    {
+        return VerticalAlignment.Stretch;
+    }
+
+    internal static HorizontalAlignment GetPanelHorizontalAlignment(TransitionMode transitionMode)
+    {
+        return transitionMode switch
+        {
+            TransitionMode.Right2Left or TransitionMode.Right2LeftWithFade => HorizontalAlignment.Right,
+            TransitionMode.Left2Right or TransitionMode.Left2RightWithFade => HorizontalAlignment.Left,
+            TransitionMode.Bottom2Top or TransitionMode.Bottom2TopWithFade or TransitionMode.Top2Bottom
+                or TransitionMode.Top2BottomWithFade => HorizontalAlignment.Center,
+            _ => HorizontalAlignment.Right
+        };
+    }
 }

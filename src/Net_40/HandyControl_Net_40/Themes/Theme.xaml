@@ -6006,7 +6006,7 @@
 						</Border>
 					</Decorator>
 				</Popup>
-				<Popup x:Name="PART_Popup_AutoComplete" PlacementTarget="{Binding ElementName=border}" AllowsTransparency="true" PopupAnimation="{StaticResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
+				<Popup x:Name="PART_Popup_AutoComplete" StaysOpen="False" PlacementTarget="{Binding ElementName=border}" AllowsTransparency="true" PopupAnimation="{StaticResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
 					<Decorator Margin="8 0">
 						<Border BorderThickness="0,1,0,0" Effect="{StaticResource EffectShadow2}" Margin="0,0,0,8" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" x:Name="dropDownBorder_AutoComplete" MinWidth="{Binding ActualWidth, ElementName=border}" MaxHeight="{TemplateBinding MaxDropDownHeight}" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource RegionBrush}">
 							<hc:ToggleBlock IsChecked="{Binding HasItems,RelativeSource={RelativeSource TemplatedParent},Mode=OneWay}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
@@ -6215,7 +6215,7 @@
 						</Border>
 					</Decorator>
 				</Popup>
-				<Popup x:Name="PART_Popup_AutoComplete" PlacementTarget="{Binding ElementName=border}" AllowsTransparency="true" PopupAnimation="{StaticResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
+				<Popup x:Name="PART_Popup_AutoComplete" StaysOpen="False" PlacementTarget="{Binding ElementName=border}" AllowsTransparency="true" PopupAnimation="{StaticResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
 					<Decorator Margin="8 0">
 						<Border BorderThickness="0,1,0,0" Effect="{StaticResource EffectShadow2}" Margin="0,0,0,8" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" x:Name="dropDownBorder_AutoComplete" MinWidth="{Binding ActualWidth, ElementName=border}" MaxHeight="{TemplateBinding MaxDropDownHeight}" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource RegionBrush}">
 							<hc:ToggleBlock IsChecked="{Binding HasItems,RelativeSource={RelativeSource TemplatedParent},Mode=OneWay}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
@@ -6330,6 +6330,8 @@
 	</Style>
 	<Style x:Key="MenuItemBaseStyle" TargetType="MenuItem">
 		<Setter Property="Padding" Value="{Binding Path=(hc:MenuAttach.ItemPadding),RelativeSource={RelativeSource AncestorType=MenuBase}}" />
+		<Setter Property="MinHeight" Value="{Binding Path=(hc:MenuAttach.ItemMinHeight),RelativeSource={RelativeSource AncestorType=MenuBase}}" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
 		<Setter Property="OverridesDefaultStyle" Value="True" />
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="BorderThickness" Value="0" />
@@ -6341,7 +6343,7 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="MenuItem">
-					<Border x:Name="Bd" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" MinWidth="240" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+					<Border x:Name="templateRoot" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" MinWidth="240" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
 						<Grid x:Name="Grid" Margin="{TemplateBinding Padding}">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="26" />
@@ -6354,7 +6356,7 @@
 							<Border Margin="0,0,10,0" IsHitTestVisible="False" Grid.Column="0" x:Name="GlyphPanel" CornerRadius="2" Background="{DynamicResource PrimaryBrush}" ClipToBounds="False" HorizontalAlignment="Right" Height="16" Visibility="Hidden" VerticalAlignment="Center" Width="16">
 								<Path UseLayoutRounding="True" Width="12" Height="12" Data="{StaticResource CheckedGeometry}" StrokeThickness="2" Stretch="Uniform" Stroke="{DynamicResource TextIconBrush}" />
 							</Border>
-							<ContentPresenter Grid.Column="1" x:Name="ContentPresenter" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentTemplate="{TemplateBinding HeaderTemplate}" ContentSource="Header" Margin="0,3" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+							<ContentPresenter Grid.Column="1" x:Name="ContentPresenter" VerticalAlignment="Center" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentTemplate="{TemplateBinding HeaderTemplate}" ContentSource="Header" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 							<TextBlock x:Name="InputGestureText" Margin="0,0,10,0" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{TemplateBinding InputGestureText}" />
 						</Grid>
 					</Border>
@@ -6376,7 +6378,7 @@
 					<Setter.Value>
 						<ControlTemplate TargetType="MenuItem">
 							<Border MinWidth="44" x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1,1,1,0" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-								<Grid VerticalAlignment="Center" Margin="{TemplateBinding Padding}">
+								<Grid Margin="{TemplateBinding Padding}">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="Auto" />
@@ -6385,7 +6387,7 @@
 									<Border Margin="0,0,10,0" Grid.Column="0" x:Name="GlyphPanel" CornerRadius="2" Background="{DynamicResource PrimaryBrush}" ClipToBounds="False" HorizontalAlignment="Right" Height="16" Visibility="Collapsed" VerticalAlignment="Center" Width="16">
 										<Path UseLayoutRounding="True" Width="12" Height="12" Data="{StaticResource CheckedGeometry}" StrokeThickness="2" Stretch="Uniform" Stroke="{DynamicResource TextIconBrush}" />
 									</Border>
-									<ContentPresenter x:Name="menuHeaderContainer" ContentTemplate="{TemplateBinding HeaderTemplate}" Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+									<ContentPresenter x:Name="menuHeaderContainer" VerticalAlignment="Center" ContentTemplate="{TemplateBinding HeaderTemplate}" Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 									<Popup Grid.Column="0" x:Name="PART_Popup" PlacementTarget="{Binding ElementName=templateRoot}" AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom">
 										<hc:SimplePanel Effect="{StaticResource EffectShadow2}" Margin="8,0,8,8">
 											<Border CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource CornerRadiusSplitConverter},ConverterParameter='0,0,1,1'}" x:Name="SubMenuBorder" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource RegionBrush}">
@@ -6473,7 +6475,7 @@
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="MenuItem">
-							<Border x:Name="Bd" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" MinWidth="240" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+							<Border x:Name="templateRoot" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" MinWidth="240" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
 								<Grid x:Name="Grid" Margin="{TemplateBinding Padding}">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="26" />
@@ -6486,7 +6488,7 @@
 									<Border Margin="0,0,10,0" IsHitTestVisible="False" Grid.Column="0" x:Name="GlyphPanel" CornerRadius="2" Background="{DynamicResource PrimaryBrush}" ClipToBounds="False" HorizontalAlignment="Right" Height="16" Visibility="Hidden" VerticalAlignment="Center" Width="16">
 										<Path UseLayoutRounding="True" Width="12" Height="12" Data="{StaticResource CheckedGeometry}" StrokeThickness="2" Stretch="Uniform" Stroke="{DynamicResource TextIconBrush}" />
 									</Border>
-									<ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}" Margin="0,3" x:Name="ContentPresenter" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentTemplate="{TemplateBinding HeaderTemplate}" Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+									<ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}" x:Name="ContentPresenter" ContentStringFormat="{TemplateBinding HeaderStringFormat}" VerticalAlignment="Center" ContentTemplate="{TemplateBinding HeaderTemplate}" Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 									<Path x:Name="Path" Grid.Column="4" Width="10" Height="10" HorizontalAlignment="Left" Data="{StaticResource RightGeometry}" Stretch="Uniform" Fill="{TemplateBinding Foreground}" VerticalAlignment="Center" />
 									<Popup Grid.Column="1" x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Right" VerticalOffset="{Binding Path=(hc:MenuAttach.PopupVerticalOffset),RelativeSource={RelativeSource AncestorType=MenuBase}}" HorizontalOffset="{Binding Path=(hc:MenuAttach.PopupHorizontalOffset),RelativeSource={RelativeSource AncestorType=MenuBase}}">
 										<Border Effect="{StaticResource EffectShadow2}" Margin="8" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" x:Name="SubMenuBorder" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource RegionBrush}">
@@ -6516,6 +6518,7 @@
 	</Style>
 	<Style x:Key="MenuBaseStyle" TargetType="Menu">
 		<Setter Property="hc:MenuAttach.ItemPadding" Value="{StaticResource DefaultControlPadding}" />
+		<Setter Property="hc:MenuAttach.ItemMinHeight" Value="{StaticResource DefaultControlHeight}" />
 		<Setter Property="hc:MenuAttach.PopupVerticalOffset" Value="-9" />
 		<Setter Property="hc:MenuAttach.PopupHorizontalOffset" Value="10" />
 		<Setter Property="OverridesDefaultStyle" Value="True" />
@@ -7025,6 +7028,7 @@
 	<Style BasedOn="{StaticResource MenuBaseStyle}" TargetType="Menu" />
 	<Style x:Key="Menu.Small" BasedOn="{StaticResource MenuBaseStyle}" TargetType="Menu">
 		<Setter Property="hc:MenuAttach.ItemPadding" Value="6,0" />
+		<Setter Property="hc:MenuAttach.ItemMinHeight" Value="{StaticResource DefaultControlHeight}" />
 		<Setter Property="hc:MenuAttach.PopupVerticalOffset" Value="-3" />
 		<Setter Property="hc:MenuAttach.PopupHorizontalOffset" Value="6" />
 	</Style>
@@ -7943,16 +7947,18 @@
 	</Style>
 	<Style x:Key="ContextMenuBaseStyle" TargetType="ContextMenu">
 		<Setter Property="hc:MenuAttach.ItemPadding" Value="{StaticResource DefaultControlPadding}" />
-		<Setter Property="hc:MenuAttach.PopupVerticalOffset" Value="-9" />
+		<Setter Property="hc:MenuAttach.ItemMinHeight" Value="{StaticResource DefaultControlHeight}" />
+		<Setter Property="hc:MenuAttach.PopupVerticalOffset" Value="-8" />
 		<Setter Property="hc:MenuAttach.PopupHorizontalOffset" Value="10" />
 		<Setter Property="Background" Value="{DynamicResource RegionBrush}" />
+		<Setter Property="BorderThickness" Value="1" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="hc:BorderElement.CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
 		<Setter Property="Padding" Value="2,2,2,0" />
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="ContextMenu">
-					<Border Effect="{StaticResource EffectShadow2}" Margin="8" Background="{TemplateBinding Background}" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="{TemplateBinding MaxHeight}" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+					<Border Effect="{StaticResource EffectShadow2}" Margin="8" Background="{TemplateBinding Background}" CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="{TemplateBinding MaxHeight}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{DynamicResource BorderBrush}">
 						<ScrollViewer Style="{StaticResource ScrollViewerUpDown}" Margin="{TemplateBinding Padding}">
 							<ItemsPresenter />
 						</ScrollViewer>
@@ -9246,6 +9252,7 @@
 				<MultiTrigger.Conditions>
 					<Condition Property="IsSelected" Value="true" />
 					<Condition Property="Selector.IsSelectionActive" Value="false" />
+					<Condition Property="hc:VisualElement.StaysHighlighted" Value="false" />
 				</MultiTrigger.Conditions>
 				<Setter Property="Background" Value="{DynamicResource DarkDefaultBrush}" />
 				<Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
@@ -9329,7 +9336,7 @@
 		<Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
 		<Setter Property="SnapsToDevicePixels" Value="true" />
 		<Setter Property="Margin" Value="0,0,0,4" />
-		<Setter Property="Padding" Value="{StaticResource DefaultControlPadding}" />
+		<Setter Property="Padding" Value="6,0" />
 		<Setter Property="MinHeight" Value="44" />
 		<Setter Property="Template">
 			<Setter.Value>
@@ -9352,6 +9359,7 @@
 				<MultiTrigger.Conditions>
 					<Condition Property="IsSelected" Value="true" />
 					<Condition Property="Selector.IsSelectionActive" Value="false" />
+					<Condition Property="hc:VisualElement.StaysHighlighted" Value="false" />
 				</MultiTrigger.Conditions>
 				<Setter Property="Background" Value="{DynamicResource DarkDefaultBrush}" />
 				<Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
@@ -10727,7 +10735,6 @@
 		<Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
 		<Setter Property="Background" Value="{DynamicResource RegionBrush}" />
 		<Setter Property="BorderThickness" Value="1" />
-		<Setter Property="Foreground" Value="White" />
 		<Setter Property="ItemContainerStyle" Value="{StaticResource TabItemStyle}" />
 		<Setter Property="Template">
 			<Setter.Value>
@@ -11616,6 +11623,7 @@
 							<MultiTrigger.Conditions>
 								<Condition Property="IsSelected" Value="true" />
 								<Condition Property="IsSelectionActive" Value="false" />
+								<Condition Property="hc:VisualElement.StaysHighlighted" Value="false" />
 							</MultiTrigger.Conditions>
 							<Setter Property="Background" TargetName="Bd" Value="{DynamicResource DarkDefaultBrush}" />
 							<Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
@@ -11850,6 +11858,7 @@
 				<MultiTrigger.Conditions>
 					<Condition Property="IsSelected" Value="true" />
 					<Condition Property="Selector.IsSelectionActive" Value="false" />
+					<Condition Property="hc:VisualElement.StaysHighlighted" Value="false" />
 				</MultiTrigger.Conditions>
 				<Setter Property="Background" Value="{DynamicResource DarkDefaultBrush}" />
 				<Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
@@ -11902,6 +11911,7 @@
 				<MultiTrigger.Conditions>
 					<Condition Property="IsSelected" Value="true" />
 					<Condition Property="Selector.IsSelectionActive" Value="false" />
+					<Condition Property="hc:VisualElement.StaysHighlighted" Value="false" />
 				</MultiTrigger.Conditions>
 				<Setter Property="Background" Value="{DynamicResource DarkDefaultBrush}" />
 				<Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
@@ -12442,6 +12452,7 @@
 	<Style BasedOn="{StaticResource ContextMenuBaseStyle}" TargetType="ContextMenu" />
 	<Style x:Key="ContextMenu.Small" BasedOn="{StaticResource ContextMenuBaseStyle}" TargetType="ContextMenu">
 		<Setter Property="hc:MenuAttach.ItemPadding" Value="6,0" />
+		<Setter Property="hc:MenuAttach.ItemMinHeight" Value="20" />
 		<Setter Property="hc:MenuAttach.PopupVerticalOffset" Value="-3" />
 		<Setter Property="hc:MenuAttach.PopupHorizontalOffset" Value="6" />
 	</Style>
@@ -12467,7 +12478,7 @@
 		<Setter Property="CellStyle" Value="{StaticResource DataGridCellStyle}" />
 		<Setter Property="Padding" Value="6" />
 		<Setter Property="RowHeight" Value="44" />
-		<Setter Property="ColumnHeaderHeight" Value="44" />
+		<Setter Property="ColumnHeaderHeight" Value="{StaticResource DefaultControlHeight}" />
 		<Setter Property="hc:DataGridAttach.TextColumnStyle" Value="{StaticResource DataGridTextColumnStyle}" />
 		<Setter Property="hc:DataGridAttach.EditingTextColumnStyle" Value="{StaticResource DataGridEditingTextColumnStyle}" />
 		<Setter Property="hc:DataGridAttach.ComboBoxColumnStyle" Value="{StaticResource DataGridComboBoxColumnStyle}" />
@@ -12511,15 +12522,17 @@
 											<RowDefinition Height="Auto" />
 											<RowDefinition Height="*" />
 										</Grid.RowDefinitions>
-										<Button Command="{x:Static DataGrid.SelectAllCommand}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType=DataGrid},Converter={StaticResource DoubleMinConverter}}" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource AllGeometry}" Foreground="{DynamicResource PrimaryBrush}">
-											<Button.Visibility>
+										<hc:SimplePanel Margin="0,0,0,6" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType=DataGrid},Converter={StaticResource DoubleMinConverter}}">
+											<CheckBox hc:SelectAllButtonAttach.Target="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}" HorizontalAlignment="Center" />
+											<hc:SimplePanel.Visibility>
 												<MultiBinding Converter="{StaticResource DataGridSelectAllButtonVisibilityConverter}">
 													<Binding Path="HeadersVisibility" RelativeSource="{RelativeSource AncestorType=DataGrid}" />
+													<Binding Path="SelectionMode" RelativeSource="{RelativeSource AncestorType=DataGrid}" />
 													<Binding Path="(hc:DataGridAttach.ShowSelectAllButton)" RelativeSource="{RelativeSource AncestorType=DataGrid}" />
 												</MultiBinding>
-											</Button.Visibility>
-										</Button>
-										<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+											</hc:SimplePanel.Visibility>
+										</hc:SimplePanel>
+										<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Margin="0,0,0,6" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
 										<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
 										<hc:ToggleBlock VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="1" IsChecked="{Binding HasItems, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=OneWay}">
 											<hc:ToggleBlock.UnCheckedContent>
@@ -12694,6 +12707,14 @@
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
+		<Style.Triggers>
+			<Trigger Property="hc:Growl.TransitionMode" Value="Bottom2Top">
+				<Setter Property="Margin" Value="10,0,10,10" />
+			</Trigger>
+			<Trigger Property="hc:Growl.TransitionMode" Value="Bottom2TopWithFade">
+				<Setter Property="Margin" Value="10,0,10,10" />
+			</Trigger>
+		</Style.Triggers>
 	</Style>
 	<Style BasedOn="{StaticResource ImageSelectorBaseStyle}" TargetType="hc:ImageSelector" />
 	<Style TargetType="hc:ImageViewer">
@@ -12790,7 +12811,7 @@
 		<Setter Property="Stylus.IsFlicksEnabled" Value="False" />
 		<Setter Property="VerticalContentAlignment" Value="Center" />
 		<Setter Property="ItemContainerStyle" Value="{StaticResource ListViewItemBaseStyle}" />
-		<Setter Property="hc:GridViewAttach.ColumnHeaderHeight" Value="44" />
+		<Setter Property="hc:GridViewAttach.ColumnHeaderHeight" Value="{StaticResource DefaultControlHeight}" />
 		<Setter Property="hc:BorderElement.CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
 		<Setter Property="Template">
 			<Setter.Value>
@@ -12827,9 +12848,9 @@
 											<RowDefinition Height="*" />
 											<RowDefinition Height="Auto" />
 										</Grid.RowDefinitions>
-										<DockPanel Grid.ColumnSpan="2" x:Name="Header">
+										<DockPanel Grid.ColumnSpan="2" x:Name="Header" Margin="0,0,0,6">
 											<ScrollViewer DockPanel.Dock="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Focusable="false">
-												<GridViewHeaderRowPresenter AllowsColumnReorder="{Binding View.AllowsColumnReorder, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderContainerStyle="{Binding View.ColumnHeaderContainerStyle, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderToolTip="{Binding View.ColumnHeaderToolTip, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderContextMenu="{Binding View.ColumnHeaderContextMenu, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderTemplate="{Binding View.ColumnHeaderTemplate, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderTemplateSelector="{Binding View.ColumnHeaderTemplateSelector, RelativeSource={RelativeSource AncestorType=ListView}}" Columns="{Binding View.Columns, RelativeSource={RelativeSource AncestorType=ListView}}" Margin="2,0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+												<GridViewHeaderRowPresenter AllowsColumnReorder="{Binding View.AllowsColumnReorder, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderContainerStyle="{Binding View.ColumnHeaderContainerStyle, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderToolTip="{Binding View.ColumnHeaderToolTip, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderContextMenu="{Binding View.ColumnHeaderContextMenu, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderTemplate="{Binding View.ColumnHeaderTemplate, RelativeSource={RelativeSource AncestorType=ListView}}" ColumnHeaderTemplateSelector="{Binding View.ColumnHeaderTemplateSelector, RelativeSource={RelativeSource AncestorType=ListView}}" Columns="{Binding View.Columns, RelativeSource={RelativeSource AncestorType=ListView}}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 											</ScrollViewer>
 										</DockPanel>
 										<hc:ToggleBlock Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" IsChecked="{Binding HasItems,RelativeSource={RelativeSource AncestorType=ListView},Mode=OneWay}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
@@ -12884,7 +12905,7 @@
 	</Style>
 	<Style x:Key="ListView.Small" BasedOn="{StaticResource ListViewBaseStyle}" TargetType="ListView">
 		<Setter Property="ItemContainerStyle" Value="{StaticResource ListViewItemBaseStyle.Small}" />
-		<Setter Property="hc:GridViewAttach.ColumnHeaderHeight" Value="30" />
+		<Setter Property="hc:GridViewAttach.ColumnHeaderHeight" Value="20" />
 	</Style>
 	<Style BasedOn="{StaticResource LoadingLineBaseStyle}" TargetType="hc:LoadingLine" />
 	<Style x:Key="LoadingLineLight" BasedOn="{StaticResource LoadingLineBaseStyle}" TargetType="hc:LoadingLine">
@@ -13033,7 +13054,6 @@
 		<Setter Property="MinHeight" Value="20" />
 	</Style>
 	<Style x:Key="PaginationButtonStyle" BasedOn="{StaticResource BaseStyle}" TargetType="RadioButton">
-		<Setter Property="GroupName" Value="1" />
 		<Setter Property="MinWidth" Value="30" />
 		<Setter Property="Background" Value="{DynamicResource RegionBrush}" />
 		<Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
@@ -13107,7 +13127,7 @@
 									<interactivity:EventToCommand Command="interactivity:ControlCommands.Selected" PassEventArgsToCommand="True" />
 								</interactivity:RoutedEventTrigger>
 							</interactivity:Interaction.Triggers>
-							<RadioButton Name="PART_ButtonFirst" Content="1" IsChecked="True" Style="{TemplateBinding PaginationButtonStyle}" />
+							<RadioButton Name="PART_ButtonFirst" IsChecked="True" Style="{TemplateBinding PaginationButtonStyle}" />
 							<Border Name="PART_MoreLeft" Cursor="No" Margin="-1,0,0,0" BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}" Background="{DynamicResource SecondaryRegionBrush}" Padding="10,0">
 								<hc:SimpleText FontWeight="Bold" Foreground="{DynamicResource SecondaryTextBrush}" Text="..." VerticalAlignment="Center" />
 							</Border>
@@ -13115,7 +13135,7 @@
 							<Border Name="PART_MoreRight" Cursor="No" Margin="-1,0,0,0" BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}" Background="{DynamicResource SecondaryRegionBrush}" Padding="10,0">
 								<hc:SimpleText FontWeight="Bold" Foreground="{DynamicResource SecondaryTextBrush}" Text="..." VerticalAlignment="Center" />
 							</Border>
-							<RadioButton Name="PART_ButtonLast" Content="10" Style="{TemplateBinding PaginationButtonStyle}" />
+							<RadioButton Name="PART_ButtonLast" Style="{TemplateBinding PaginationButtonStyle}" />
 						</StackPanel>
 						<Button x:Name="PART_ButtonRight" MinWidth="30" Padding="10,8" hc:IconElement.Geometry="{StaticResource RightGeometry}" hc:BorderElement.CornerRadius="{Binding Path=(hc:BorderElement.CornerRadius),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource CornerRadiusSplitConverter},ConverterParameter='0,1,1,0'}" Margin="-1,0,0,0" Command="interactivity:ControlCommands.Next" />
 						<hc:NumericUpDown x:Name="PART_Jump" IsEnabled="{TemplateBinding IsJumpEnabled}" Visibility="{TemplateBinding IsJumpEnabled,Converter={StaticResource Boolean2VisibilityConverter}}" Margin="6,0,0,0" Maximum="{Binding MaxPageCount,RelativeSource={RelativeSource TemplatedParent}}" Minimum="1" />
@@ -14017,19 +14037,19 @@
 			<TickBar x:Name="TopTick" Fill="{TemplateBinding Foreground}" Height="4" Margin="0,0,0,2" Placement="Top" Grid.Row="0" Visibility="Collapsed" />
 			<TickBar x:Name="BottomTick" Fill="{TemplateBinding Foreground}" Height="4" Margin="0,2,0,0" Placement="Bottom" Grid.Row="2" Visibility="Collapsed" />
 			<Border x:Name="TrackBackground" Background="{TemplateBinding Background}" Grid.Row="1" Height="2" VerticalAlignment="center" Margin="9,0">
-				<Canvas x:Name="Canvas_SelectionRange" Visibility="Hidden">
+				<Canvas x:Name="Canvas_SelectionRange" Visibility="Hidden" Margin="-9,0,0,0">
 					<Rectangle x:Name="PART_SelectionRange" Fill="{DynamicResource AccentBrush}" Height="2" />
 				</Canvas>
 			</Border>
-			<Track Margin="9,0" x:Name="PART_Track" Grid.Row="1">
+			<Track x:Name="PART_Track" Grid.Row="1">
 				<Track.DecreaseRepeatButton>
-					<RepeatButton Command="{x:Static Slider.DecreaseLarge}" Background="{DynamicResource PrimaryBrush}" Style="{StaticResource SliderRepeatButtonHorizontalStyle}" />
+					<RepeatButton Margin="9,0,0,0" Command="{x:Static Slider.DecreaseLarge}" Background="{DynamicResource PrimaryBrush}" Style="{StaticResource SliderRepeatButtonHorizontalStyle}" />
 				</Track.DecreaseRepeatButton>
 				<Track.IncreaseRepeatButton>
-					<RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource SliderRepeatButtonHorizontalStyle}" />
+					<RepeatButton Margin="0,0,9,0" Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource SliderRepeatButtonHorizontalStyle}" />
 				</Track.IncreaseRepeatButton>
 				<Track.Thumb>
-					<Thumb ClipToBounds="False" Width="18" Margin="-9,0" Height="18" x:Name="Thumb" Focusable="False" OverridesDefaultStyle="True" Template="{StaticResource SliderThumb}" VerticalAlignment="Center" />
+					<Thumb ClipToBounds="False" Width="18" Margin="0" Height="18" x:Name="Thumb" Focusable="False" OverridesDefaultStyle="True" Template="{StaticResource SliderThumb}" VerticalAlignment="Center" />
 				</Track.Thumb>
 			</Track>
 		</Grid>
@@ -14073,19 +14093,19 @@
 			<TickBar x:Name="LeftTick" Grid.Column="0" Fill="{TemplateBinding Foreground}" Margin="0,0,2,0" Placement="Left" Visibility="Collapsed" Width="4" />
 			<TickBar x:Name="RightTick" Grid.Column="2" Fill="{TemplateBinding Foreground}" Margin="2,0,0,0" Placement="Right" Visibility="Collapsed" Width="4" />
 			<Border x:Name="TrackBackground" Background="{TemplateBinding Background}" Grid.Column="1" HorizontalAlignment="center" Margin="0,9" Width="2">
-				<Canvas x:Name="Canvas_SelectionRange" Visibility="Hidden">
+				<Canvas x:Name="Canvas_SelectionRange" Visibility="Hidden" Margin="0,-9,0,0">
 					<Rectangle x:Name="PART_SelectionRange" Fill="{DynamicResource AccentBrush}" Width="2" />
 				</Canvas>
 			</Border>
-			<Track Margin="0,9" x:Name="PART_Track" Grid.Column="1">
+			<Track x:Name="PART_Track" Grid.Column="1">
 				<Track.DecreaseRepeatButton>
-					<RepeatButton Command="{x:Static Slider.DecreaseLarge}" Background="{DynamicResource PrimaryBrush}" Style="{StaticResource SliderRepeatButtonVerticalStyle}" />
+					<RepeatButton Margin="0,9,0,0" Command="{x:Static Slider.DecreaseLarge}" Background="{DynamicResource PrimaryBrush}" Style="{StaticResource SliderRepeatButtonVerticalStyle}" />
 				</Track.DecreaseRepeatButton>
 				<Track.IncreaseRepeatButton>
-					<RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource SliderRepeatButtonVerticalStyle}" />
+					<RepeatButton Margin="0,0,0,9" Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource SliderRepeatButtonVerticalStyle}" />
 				</Track.IncreaseRepeatButton>
 				<Track.Thumb>
-					<Thumb Margin="0,-9" x:Name="Thumb" Focusable="False" Height="18" OverridesDefaultStyle="True" Template="{StaticResource SliderThumb}" HorizontalAlignment="Center" Width="18" />
+					<Thumb Margin="0" x:Name="Thumb" Focusable="False" Height="18" OverridesDefaultStyle="True" Template="{StaticResource SliderThumb}" HorizontalAlignment="Center" Width="18" />
 				</Track.Thumb>
 			</Track>
 		</Grid>
