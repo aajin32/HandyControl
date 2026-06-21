@@ -44,7 +44,11 @@
       [ "ConfettiCannon", "ConfettiCannonDemo", "Brush.Favorite", "", "Interacting" ],
       [ "Gravatar", "GravatarDemo", "Brush.User", "", "DataDisplay" ],
       [ "ButtonGroup", "ButtonGroupDemo", "Brush.ButtonGroup", "", "Button" ],
+      [ "ProgressButton", "ProgressButtonDemo", "Brush.ProgressBarStatusBar8", "", "Button" ],
       [ "Card", "CardDemo", "Brush.ContactCard", "", "DataDisplay" ],
+      [ "GotoTop", "GotoTopDemo", "Brush.GoToTop", "", "Interacting" ],
+      [ "PinBox", "PinBoxDemo", "Brush.Ellipsis", "", "DataEntry" ],
+      [ "SearchBar", "SearchBarDemo", "Brush.Search", "", "DataEntry" ],
       [ "ElementGroup", "ElementGroupDemo", "Brush.ButtonGroup", "", "Layout" ],
       [ "CirclePanel", "CirclePanelDemo", "Brush.ColorWheel", "", "Layout" ],
       [ "Grid", "GridDemo", "Brush.GridPane", "", "Layout" ],
@@ -54,12 +58,14 @@
       [ "UniformSpacingPanel", "UniformSpacingPanelDemo", "Brush.IncreaseHorizontalSpacing", "", "Layout" ],
       [ "ProgressBar", "ProgressBarDemo", "Brush.ProgressBar", "", "Feedback" ],
       [ "Rate", "RateDemo", "Brush.Favorite", "", "Feedback" ],
+      [ "Pagination", "PaginationDemo", "Brush.Paginator", "", "Navigation" ],
       [ "Loading", "LoadingDemo", "Brush.Loading", "", "Feedback" ],
       [ "Tag", "TagDemo", "Brush.Tag", "", "DataDisplay" ],
       [ "Badge", "BadgeDemo", "Brush.CheckDot", "", "DataDisplay" ],
       [ "Shield", "ShieldDemo", "Brush.SplitKeyValuePair", "", "DataDisplay" ],
       [ "ImageBlock", "ImageBlockDemo", "Brush.ImageStack", "", "DataDisplay" ],
-      [ "AnimationPath", "AnimationPathDemo", "Brush.Path", "", "DataDisplay" ]
+      [ "AnimationPath", "AnimationPathDemo", "Brush.Path", "", "DataDisplay" ],
+      [ "ImageSelector", "ImageSelectorDemo", "Brush.Image", "", "DataEntry" ]
     ]
   }
 ]
